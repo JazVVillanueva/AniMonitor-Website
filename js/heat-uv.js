@@ -72,9 +72,26 @@ function classifyHI(hi) {
 
 
 // ═══════════════════════════════════════════════════════════════
-// 4. CAUTION HEADLINE  (left column, driven by UV + HI)
+// 4. CAUTION HEADLINE  (left column, driven by UV + HI + time)
+//    Night is defined as 18:00 – 05:59 (6 pm to 6 am).
+//    At night, UV radiation is zero so headlines reflect heat
+//    index and general rest/recovery guidance instead.
 // ═══════════════════════════════════════════════════════════════
+function isNight() {
+  const hour = new Date().getHours(); // 0–23
+  return hour >= 18 || hour < 6;
+}
+
 function getCautionHeadline(uv, hi) {
+  if (isNight()) {
+    // Night-time headlines — UV is irrelevant, heat index still matters
+    if (hi >= 42) return "Dangerous Heat Tonight.<br>Keep Cool Indoors.";
+    if (hi >= 33) return "Hot Night Ahead.<br>Stay Hydrated & Cool.";
+    if (hi >= 27) return "Warm Evening.<br>Rest Well Tonight.";
+    return "Good Night.<br>Sleep Well!";
+  }
+
+  // Daytime headlines — driven by UV and heat index
   if (uv >= 11 || hi >= 42) return "Danger!<br>Stay Indoors Today.";
   if (uv >= 8  || hi >= 33) return "Please Exercise<br>Caution Today.";
   if (uv >= 6  || hi >= 27) return "Take Care<br>in the Sun Today.";
